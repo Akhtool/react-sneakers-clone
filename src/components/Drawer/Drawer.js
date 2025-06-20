@@ -9,7 +9,11 @@ import { Context } from "../../context/Context";
 import axios from "axios";
 import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
 
+const ORDERS_URL = "http://localhost:3001/orders";
+const CART_ITEMS_URL = "http://localhost:3001/cartItems";
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
 
 function Drawer({
   isDrawerOpen,
@@ -50,6 +54,14 @@ function Drawer({
         .get(ORDERS_URL)
         .then((res) => setOrders(res.data))
         .catch((err) => console.log(err));
+      });
+
+      await Promise.all(
+        cartItems.map((item) => axios.delete(`${CART_ITEMS_URL}/${item.id}`))
+      );
+
+      const res = await axios.get(ORDERS_URL);
+      setOrders(res.data);
 
       setOrderId(data.id);
       setIsOrderComplete(true);
