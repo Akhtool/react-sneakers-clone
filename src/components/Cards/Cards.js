@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import CardsLoader from "../loaders/CardsLoader/CardsLoader";
 import { Context } from "../../context/Context";
 import axios from "axios";
+import { SNEAKERS_URL } from "../../api";
 
 function Cards({
   isCardsLoading,
@@ -20,7 +21,7 @@ function Cards({
   onRemoveFavorite,
 }) {
   const [searchValue, setSearchValue] = useState("");
-  const [isSearched, setIsSearche] = useState(false);
+  const [isSearched, setIsSearched] = useState(false);
   const { setCards, setIsCardsLoading, getSneakersCards } = useContext(Context);
 
   const location = useLocation();
@@ -31,7 +32,7 @@ function Cards({
 
   const onSearchClick = () => {
     axios
-      .get(`http://localhost:3001/sneakers?title_like=${searchValue}`)
+      .get(`${SNEAKERS_URL}?title_like=${searchValue}`)
       .then((res) => {
         setIsCardsLoading(true);
         setCards(res.data);
@@ -39,14 +40,14 @@ function Cards({
       .catch((err) => console.log(err))
       .finally(() => {
         setIsCardsLoading(false);
-        setIsSearche(true);
+        setIsSearched(true);
       });
   };
 
   const onDeleteSearchValue = () => {
     setSearchValue("");
     getSneakersCards();
-    setIsSearche(false);
+    setIsSearched(false);
   };
 
   const onEnter = (event) => {
