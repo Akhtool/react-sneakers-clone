@@ -7,9 +7,7 @@ import orderCompleteImg from "../../images/order-compleate.png";
 import { useContext, useState } from "react";
 import { Context } from "../../context/Context";
 import axios from "axios";
-
-const ORDERS_URL = "http://localhost:3001/orders";
-const CART_ITEMS_URL = "http://localhost:3001/cartItems";
+import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
