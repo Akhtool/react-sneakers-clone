@@ -8,6 +8,9 @@ import { useContext, useState } from "react";
 import { Context } from "../../context/Context";
 import axios from "axios";
 
+const ORDERS_URL = "http://localhost:3001/orders";
+const CART_ITEMS_URL = "http://localhost:3001/cartItems";
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function Drawer({
@@ -33,20 +36,20 @@ function Drawer({
 
   const onClickOrder = async () => {
     try {
-      const { data } = await axios.post("http://localhost:3001/orders", {
+      const { data } = await axios.post(ORDERS_URL, {
         items: cartItems,
-        totalPrice: totalPrice,
+        totalPrice,
         isPaid: false,
       });
 
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
-        await axios.delete("http://localhost:3001/cartItems/" + item.id);
+        await axios.delete(`${CART_ITEMS_URL}/${item.id}`);
         await delay(100);
       }
 
       axios
-        .get("http://localhost:3001/orders")
+        .get(ORDERS_URL)
         .then((res) => setOrders(res.data))
         .catch((err) => console.log(err));
 
