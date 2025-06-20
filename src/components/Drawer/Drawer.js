@@ -7,6 +7,7 @@ import orderCompleteImg from "../../images/order-compleate.png";
 import { useContext, useState } from "react";
 import { Context } from "../../context/Context";
 import axios from "axios";
+import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,26 +27,27 @@ function Drawer({
     setIsOrderComplete(false);
   };
 
-  const handleDeleteCardClick = (id) => {
-    onRemove(id);
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const handleDeleteCardClick = (sneakerId) => {
+    onRemove(sneakerId);
+    setCartItems(cartItems.filter((item) => item.sneakerId !== sneakerId));
   };
 
   const onClickOrder = async () => {
     try {
-      const { data } = await axios.post("http://localhost:3001/orders", {
+      const { data } = await axios.post(ORDERS_URL, {
         items: cartItems,
-        totalPrice: totalPrice,
+        totalPrice,
+        isPaid: false,
       });
 
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
-        await axios.delete("http://localhost:3001/cartItems/" + item.id);
+        await axios.delete(`${CART_ITEMS_URL}/${item.id}`);
         await delay(100);
       }
 
       axios
-        .get("http://localhost:3001/orders")
+        .get(ORDERS_URL)
         .then((res) => setOrders(res.data))
         .catch((err) => console.log(err));
 
@@ -100,7 +102,9 @@ function Drawer({
             </div>
           ) : isCartItemsLoading ? (
             <>
-              {[...Array(3).map((item, index) => <CartLoader key={index} />)]}
+              {[...Array(3)].map((_, index) => (
+                <CartLoader key={index} />
+              ))}
             </>
           ) : (
             cartItems.map((item) => {
@@ -123,7 +127,7 @@ function Drawer({
                     className="remove-button"
                     src={closeBtn}
                     alt="Remove"
-                    onClick={() => handleDeleteCardClick(item.id)}
+                    onClick={() => handleDeleteCardClick(item.sneakerId)}
                   />
                 </div>
               );

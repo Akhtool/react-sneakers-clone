@@ -13,7 +13,7 @@ function Orders({
   onAddToFavorite,
   onRemoveFavorite,
 }) {
-  const { orders, goBack } = useContext(Context);
+  const { orders, goBack, payOrder } = useContext(Context);
   return (
     <section className="cards">
       <div className="cards__top">
@@ -37,11 +37,25 @@ function Orders({
               <div key={item.id} className="order__container">
                 <h2>Заказ №{item.id}</h2>
                 <h3>На сумму: {item.totalPrice} руб.</h3>
+                <p>
+                  Статус: {item.isPaid ? "Оплачен" : "Не оплачен"}
+                </p>
+                {!item.isPaid && (
+                  <button
+                    className="green-button order__pay-button"
+                    onClick={() => payOrder(item.id)}
+                  >
+                    Оплатить
+                  </button>
+                )}
                 <div className="order__items-list">
                   {item.items.map((item) => (
                     <Card
                       key={item.id}
-                      {...item}
+                      id={item.sneakerId || item.id}
+                      imageUrl={item.imageUrl}
+                      title={item.title}
+                      price={item.price}
                       onAddToCart={onAddToCart}
                       onAddToFavorite={onAddToFavorite}
                       onRemoveFavorite={onRemoveFavorite}

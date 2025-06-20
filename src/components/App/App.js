@@ -9,6 +9,12 @@ import Orders from "../../pages/Orders/Orders.js";
 import Profile from "../../pages/Profile/Profile.js";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Favorites from "../../pages/Favorites/Favorites.js";
+import {
+  SNEAKERS_URL,
+  CART_ITEMS_URL,
+  FAVORITES_URL,
+  ORDERS_URL,
+} from "../../api";
 
 function App() {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -22,10 +28,6 @@ function App() {
   const [isOrdersLoading, setIsOrdersLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(false);
 
-  const SNEAKERS_URL = "http://localhost:3001/sneakers";
-  const CART_ITEMS_URL = "http://localhost:3001/cartItems";
-  const FAVORITES_URL = "http://localhost:3001/favorites";
-  const ORDERS_URL = "http://localhost:3001/orders";
 
   const totalPrice = cartItems.reduce((sum, obj) => obj.price + sum, 0);
   const cartItemsQuantity = cartItems.length;
@@ -86,16 +88,23 @@ function App() {
   };
 
   const onAddToCart = (sneaker) => {
-    const existingCartItem = cartItems.find((item) => item.id === sneaker.id);
+    const existingCartItem = cartItems.find(
+      (item) => item.sneakerId === sneaker.sneakerId
+    );
     if (!existingCartItem) {
-      setCartItems([...cartItems, sneaker]);
-      axios.post(CART_ITEMS_URL, sneaker);
+      axios
+        .post(CART_ITEMS_URL, sneaker)
+        .then((res) => setCartItems([...cartItems, res.data]))
+        .catch((err) => console.log(err));
     }
   };
 
-  const onRemoveItem = (id) => {
-    axios.delete(`${CART_ITEMS_URL}/${id}`);
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const onRemoveItem = (sneakerId) => {
+    const item = cartItems.find((el) => el.sneakerId === sneakerId);
+    if (item) {
+      axios.delete(`${CART_ITEMS_URL}/${item.id}`);
+      setCartItems(cartItems.filter((el) => el.sneakerId !== sneakerId));
+    }
   };
 
   const onAddToFavorite = (sneaker) => {
@@ -111,6 +120,15 @@ function App() {
   const onRemoveFavorite = (id) => {
     axios.delete(`${FAVORITES_URL}/${id}`);
     setFavorites(favorites.filter((item) => item.id !== id));
+  };
+
+  const payOrder = (id) => {
+    axios
+      .patch(`${ORDERS_URL}/${id}`, { isPaid: true })
+      .then((res) =>
+        setOrders(orders.map((order) => (order.id === id ? res.data : order)))
+      )
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -131,6 +149,7 @@ function App() {
         cartItemsQuantity,
         favoritesQuantity,
         getSneakersCards,
+        payOrder,
       }}
     >
       <div className="app">
