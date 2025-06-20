@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Context } from "../../context/Context.js";
 import axios from "axios";
+import {
+  SNEAKERS_URL,
+  CART_ITEMS_URL,
+  FAVORITES_URL,
+  ORDERS_URL,
+} from "../../api";
 import "./App.css";
 import Header from "../Header/Header.js";
 import Drawer from "../Drawer/Drawer.js";
@@ -22,10 +28,6 @@ function App() {
   const [isOrdersLoading, setIsOrdersLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(false);
 
-  const SNEAKERS_URL = "http://localhost:3001/sneakers";
-  const CART_ITEMS_URL = "http://localhost:3001/cartItems";
-  const FAVORITES_URL = "http://localhost:3001/favorites";
-  const ORDERS_URL = "http://localhost:3001/orders";
 
   const totalPrice = cartItems.reduce((sum, obj) => obj.price + sum, 0);
   const cartItemsQuantity = cartItems.length;
@@ -34,40 +36,52 @@ function App() {
   const navigate = useNavigate();
   const goBack = () => navigate(-1);
 
-  const getSneakersCards = () => {
-    axios
-      .get(SNEAKERS_URL)
-      .then((res) => setCards(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => setIsCardsLoading(false));
+  const getSneakersCards = async () => {
+    try {
+      const { data } = await axios.get(SNEAKERS_URL);
+      setCards(data);
+    } catch (err) {
+      alert("Не удалось загрузить список кроссовок");
+      console.log(err);
+    } finally {
+      setIsCardsLoading(false);
+    }
   };
 
-  const getCartItems = () => {
-    axios
-      .get(CART_ITEMS_URL)
-      .then((res) => setCartItems(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => setIsCartItemsLoading(false));
+  const getCartItems = async () => {
+    try {
+      const { data } = await axios.get(CART_ITEMS_URL);
+      setCartItems(data);
+    } catch (err) {
+      alert("Ошибка при загрузке корзины");
+      console.log(err);
+    } finally {
+      setIsCartItemsLoading(false);
+    }
   };
 
-  const getFavorites = () => {
-    axios
-      .get(FAVORITES_URL)
-      .then((res) => setFavorites(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setIsFavoritesLoading(false);
-      });
+  const getFavorites = async () => {
+    try {
+      const { data } = await axios.get(FAVORITES_URL);
+      setFavorites(data);
+    } catch (err) {
+      alert("Ошибка при загрузке избранного");
+      console.log(err);
+    } finally {
+      setIsFavoritesLoading(false);
+    }
   };
 
-  const getOrders = () => {
-    axios
-      .get(ORDERS_URL)
-      .then((res) => setOrders(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setIsOrdersLoading(false);
-      });
+  const getOrders = async () => {
+    try {
+      const { data } = await axios.get(ORDERS_URL);
+      setOrders(data);
+    } catch (err) {
+      alert("Ошибка при загрузке заказов");
+      console.log(err);
+    } finally {
+      setIsOrdersLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -85,32 +99,52 @@ function App() {
     setDrawerOpen(false);
   };
 
-  const onAddToCart = (sneaker) => {
+  const onAddToCart = async (sneaker) => {
     const existingCartItem = cartItems.find((item) => item.id === sneaker.id);
     if (!existingCartItem) {
-      setCartItems([...cartItems, sneaker]);
-      axios.post(CART_ITEMS_URL, sneaker);
+      try {
+        setCartItems([...cartItems, sneaker]);
+        await axios.post(CART_ITEMS_URL, sneaker);
+      } catch (err) {
+        alert("Не удалось добавить в корзину");
+        console.log(err);
+      }
     }
   };
 
-  const onRemoveItem = (id) => {
-    axios.delete(`${CART_ITEMS_URL}/${id}`);
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const onRemoveItem = async (id) => {
+    try {
+      await axios.delete(`${CART_ITEMS_URL}/${id}`);
+      setCartItems(cartItems.filter((item) => item.id !== id));
+    } catch (err) {
+      alert("Не удалось удалить товар из корзины");
+      console.log(err);
+    }
   };
 
-  const onAddToFavorite = (sneaker) => {
+  const onAddToFavorite = async (sneaker) => {
     const existingFavoriteItem = favorites.find(
       (item) => item.id === sneaker.id
     );
     if (!existingFavoriteItem) {
-      setFavorites([...favorites, sneaker]);
-      axios.post(FAVORITES_URL, sneaker);
+      try {
+        setFavorites([...favorites, sneaker]);
+        await axios.post(FAVORITES_URL, sneaker);
+      } catch (err) {
+        alert("Не удалось добавить в избранное");
+        console.log(err);
+      }
     }
   };
 
-  const onRemoveFavorite = (id) => {
-    axios.delete(`${FAVORITES_URL}/${id}`);
-    setFavorites(favorites.filter((item) => item.id !== id));
+  const onRemoveFavorite = async (id) => {
+    try {
+      await axios.delete(`${FAVORITES_URL}/${id}`);
+      setFavorites(favorites.filter((item) => item.id !== id));
+    } catch (err) {
+      alert("Не удалось удалить из избранного");
+      console.log(err);
+    }
   };
 
   return (
