@@ -101,7 +101,9 @@ function Drawer({
             </div>
           ) : isCartItemsLoading ? (
             <>
-              {[...Array(3).map((item, index) => <CartLoader key={index} />)]}
+              {[...Array(3)].map((_, index) => (
+                <CartLoader key={index} />
+              ))}
             </>
           ) : (
             cartItems.map((item) => {
