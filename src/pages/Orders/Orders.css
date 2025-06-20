@@ -9,3 +9,9 @@
   gap: 40px;
   min-width: 960px;
 }
+
+.order__pay-button {
+  margin-bottom: 20px;
+  width: 200px;
+  align-self: flex-start;
+}

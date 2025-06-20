@@ -7,6 +7,11 @@ import orderCompleteImg from "../../images/order-compleate.png";
 import { useContext, useState } from "react";
 import { Context } from "../../context/Context";
 import axios from "axios";
+
+const ORDERS_URL = "http://localhost:3001/orders";
+const CART_ITEMS_URL = "http://localhost:3001/cartItems";
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
 
 function Drawer({
@@ -35,6 +40,19 @@ function Drawer({
       const { data } = await axios.post(ORDERS_URL, {
         items: cartItems,
         totalPrice,
+        isPaid: false,
+      });
+
+      for (let i = 0; i < cartItems.length; i++) {
+        const item = cartItems[i];
+        await axios.delete(`${CART_ITEMS_URL}/${item.id}`);
+        await delay(100);
+      }
+
+      axios
+        .get(ORDERS_URL)
+        .then((res) => setOrders(res.data))
+        .catch((err) => console.log(err));
       });
 
       await Promise.all(
