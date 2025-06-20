@@ -36,6 +36,7 @@ function Drawer({
       const { data } = await axios.post("http://localhost:3001/orders", {
         items: cartItems,
         totalPrice: totalPrice,
+        isPaid: false,
       });
 
       for (let i = 0; i < cartItems.length; i++) {

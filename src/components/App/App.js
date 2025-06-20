@@ -113,6 +113,15 @@ function App() {
     setFavorites(favorites.filter((item) => item.id !== id));
   };
 
+  const payOrder = (id) => {
+    axios
+      .patch(`${ORDERS_URL}/${id}`, { isPaid: true })
+      .then((res) =>
+        setOrders(orders.map((order) => (order.id === id ? res.data : order)))
+      )
+      .catch((err) => console.log(err));
+  };
+
   return (
     <Context.Provider
       value={{
@@ -131,6 +140,7 @@ function App() {
         cartItemsQuantity,
         favoritesQuantity,
         getSneakersCards,
+        payOrder,
       }}
     >
       <div className="app">
