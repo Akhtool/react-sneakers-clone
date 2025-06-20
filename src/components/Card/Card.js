@@ -21,7 +21,7 @@ function Card({
 
   useEffect(() => {
     // Проверяем, есть ли текущая карточка в корзине
-    const isInCart = cartItems.some((item) => item.id === id);
+    const isInCart = cartItems.some((item) => item.sneakerId === id);
     setIsAdded(isInCart);
   }, [cartItems, id]);
 
@@ -33,7 +33,7 @@ function Card({
 
   const handleAddCardClick = () => {
     setIsAdded(!isAdded);
-    onAddToCart({ id, imageUrl, title, price });
+    onAddToCart({ sneakerId: id, imageUrl, title, price });
   };
 
   const handleDeleteCardClick = (id) => {

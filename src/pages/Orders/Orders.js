@@ -52,7 +52,10 @@ function Orders({
                   {item.items.map((item) => (
                     <Card
                       key={item.id}
-                      {...item}
+                      id={item.sneakerId || item.id}
+                      imageUrl={item.imageUrl}
+                      title={item.title}
+                      price={item.price}
                       onAddToCart={onAddToCart}
                       onAddToFavorite={onAddToFavorite}
                       onRemoveFavorite={onRemoveFavorite}

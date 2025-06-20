@@ -15,6 +15,12 @@ import Orders from "../../pages/Orders/Orders.js";
 import Profile from "../../pages/Profile/Profile.js";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Favorites from "../../pages/Favorites/Favorites.js";
+import {
+  SNEAKERS_URL,
+  CART_ITEMS_URL,
+  FAVORITES_URL,
+  ORDERS_URL,
+} from "../../api";
 
 function App() {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -98,7 +104,24 @@ function App() {
   const handleDrawerCloseClick = () => {
     setDrawerOpen(false);
   };
+  const onAddToCart = (sneaker) => {
+    const existingCartItem = cartItems.find(
+      (item) => item.sneakerId === sneaker.sneakerId
+    );
+    if (!existingCartItem) {
+      axios
+        .post(CART_ITEMS_URL, sneaker)
+        .then((res) => setCartItems([...cartItems, res.data]))
+        .catch((err) => console.log(err));
+    }
+  };
 
+  const onRemoveItem = (sneakerId) => {
+    const item = cartItems.find((el) => el.sneakerId === sneakerId);
+    if (item) {
+      axios.delete(`${CART_ITEMS_URL}/${item.id}`);
+      setCartItems(cartItems.filter((el) => el.sneakerId !== sneakerId));
+=======
   const onAddToCart = async (sneaker) => {
     const existingCartItem = cartItems.find((item) => item.id === sneaker.id);
     if (!existingCartItem) {
@@ -145,6 +168,15 @@ function App() {
       alert("Не удалось удалить из избранного");
       console.log(err);
     }
+  };
+
+  const payOrder = (id) => {
+    axios
+      .patch(`${ORDERS_URL}/${id}`, { isPaid: true })
+      .then((res) =>
+        setOrders(orders.map((order) => (order.id === id ? res.data : order)))
+      )
+      .catch((err) => console.log(err));
   };
 
   const payOrder = (id) => {

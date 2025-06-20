@@ -7,6 +7,7 @@ import orderCompleteImg from "../../images/order-compleate.png";
 import { useContext, useState } from "react";
 import { Context } from "../../context/Context";
 import axios from "axios";
+import { CART_ITEMS_URL, ORDERS_URL } from "../../api";
 
 const ORDERS_URL = "http://localhost:3001/orders";
 const CART_ITEMS_URL = "http://localhost:3001/cartItems";
@@ -30,9 +31,9 @@ function Drawer({
     setIsOrderComplete(false);
   };
 
-  const handleDeleteCardClick = (id) => {
-    onRemove(id);
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const handleDeleteCardClick = (sneakerId) => {
+    onRemove(sneakerId);
+    setCartItems(cartItems.filter((item) => item.sneakerId !== sneakerId));
   };
 
   const onClickOrder = async () => {
@@ -138,7 +139,7 @@ function Drawer({
                     className="remove-button"
                     src={closeBtn}
                     alt="Remove"
-                    onClick={() => handleDeleteCardClick(item.id)}
+                    onClick={() => handleDeleteCardClick(item.sneakerId)}
                   />
                 </div>
               );
